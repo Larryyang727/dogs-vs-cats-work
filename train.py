@@ -4,6 +4,23 @@ from tqdm import trange
 from models.model_def import get_resnet18, get_efficientnet_b0
 from models.train_eval import train_one_epoch, validate, ensemble_evaluate
 from utils.data_utils import get_dataloaders
+import os
+import zipfile
+import gdown
+
+
+if not os.path.exists("/content/data/dogs-vs-cats/train"):
+    print("資料不存在，開始下載...")
+    os.makedirs("/content/data", exist_ok=True)
+    url = "https://drive.google.com/file/d/1fXwmnlPpqZKWVd8Tv8hw2ZHHqZQVhSbJ/view?usp=sharing"
+    output = "/content/data/dogs-vs-cats.zip"
+    gdown.download(url, output, quiet=False)
+    # 解壓縮
+    with zipfile.ZipFile("/content/data/dogs-vs-cats.zip", "r") as zip_ref:
+        zip_ref.extractall("/content/data")
+    print("資料下載並解壓縮完成！")
+else:
+    print("資料已存在，跳過下載。")
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
