@@ -14,7 +14,7 @@ if not os.path.exists("/content/data/dogs-vs-cats/train"):
     os.makedirs("/content/data", exist_ok=True)
     url = "https://drive.google.com/file/d/1fXwmnlPpqZKWVd8Tv8hw2ZHHqZQVhSbJ/view?usp=sharing"
     output = "/content/data/dogs-vs-cats.zip"
-    gdown.download(url, output, quiet=False)
+    gdown.download(url, output, fuzzy=True)
     # 解壓縮
     with zipfile.ZipFile("/content/data/dogs-vs-cats.zip", "r") as zip_ref:
         zip_ref.extractall("/content/data")
