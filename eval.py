@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, roc_curve, auc
+import argparse
 
 def evaluate_model(model, val_loader, device):
     model.eval()
@@ -80,12 +81,21 @@ def plot_roc_curve(y_true, y_probs, label='ROC', save_path=None):
     plt.show()
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', type=str, default='/content/data/dogs-vs-cats/train')
+    parser.add_argument('--model_path', type=str, default='best_ensemble.pth')
+    args = parser.parse_args()
     from models.load_model import load_models
     from utils.data_utils import get_dataloaders
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model_a, model_b = load_models("best_ensemble.pth", device)  # ResNet18 and EfficientNetB0
-    _, val_loader, _ = get_dataloaders("/content/data/dogs-vs-cats/train", batch_size=32, val_ratio=0.2)
+    model_a, model_b = load_models(
+      "best_ensemble.pth", device)  # ResNet18 and EfficientNetB0
+
+    train_dir = args.data_dir
+    train_path = train_dir
+
+    _, val_loader, _ = get_dataloaders(train_path,batch_size=32,val_ratio=0.2)
 
     # ResNet18
     y_true_a, y_pred_a, y_probs_a = evaluate_model(model_a, val_loader, device)

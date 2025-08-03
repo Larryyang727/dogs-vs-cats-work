@@ -7,28 +7,33 @@ from utils.data_utils import get_dataloaders
 import os
 import zipfile
 import gdown
+import argparse
+import shutil
+
+def download_data_if_needed(data_root):
+    train_path = os.path.join(data_root, "train")
+    if not os.path.exists(train_path):
+        os.makedirs(data_root, exist_ok=True)
+        url = "https://drive.google.com/uc?id=1fXwmnlPpqZKWVd8Tv8hw2ZHHqZQVhSbJ"
+        output = os.path.join(data_root, "dogs-vs-cats.zip")
+        gdown.download(url, output, fuzzy=True)
+
+        with zipfile.ZipFile(output, "r") as zip_ref:
+            zip_ref.extractall(data_root)
+
+        extracted_dir = os.path.join(data_root,"dogs-vs-cats")
+        if os.path.exists(extracted_dir):
+            for item in os.listdir(extracted_dir):
+                shutil.move(os.path.join(extracted_dir, item), data_root)
+            shutil.rmtree(extracted_dir)
+        print("下載並解壓完成！")
 
 
-if not os.path.exists("/content/data/dogs-vs-cats/train"):
-    print("資料不存在，開始下載...")
-    os.makedirs("/content/data", exist_ok=True)
-    url = "https://drive.google.com/file/d/1fXwmnlPpqZKWVd8Tv8hw2ZHHqZQVhSbJ/view?usp=sharing"
-    output = "/content/data/dogs-vs-cats.zip"
-    gdown.download(url, output, fuzzy=True)
-    # 解壓縮
-    with zipfile.ZipFile("/content/data/dogs-vs-cats.zip", "r") as zip_ref:
-        zip_ref.extractall("/content/data")
-    print("資料下載並解壓縮完成！")
-else:
-    print("資料已存在，跳過下載。")
-
-def main():
+def main(data_dir, epochs=30, batch_size=32):
+    download_data_if_needed(data_dir)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    data_dir = "/content/data/dogs-vs-cats/train"  #資料路徑
-    batch_size = 32
-    epochs = 30
-
-    train_loader, val_loader, class_to_idx = get_dataloaders(data_dir, batch_size)
+    train_path = os.path.join(data_dir, "train")
+    train_loader, val_loader, class_to_idx = get_dataloaders(train_path, batch_size)
     print("類別對應：", class_to_idx)
 
     model_a = get_resnet18().to(device)
@@ -71,7 +76,7 @@ def main():
 
         if ensemble_acc > best_ensemble_acc:
             best_ensemble_acc = ensemble_acc
-            print(f"🎯 New best ensemble acc: {best_ensemble_acc:.4f} — model saved.")
+            print(f"New best ensemble acc: {best_ensemble_acc:.4f} — model saved.")
             torch.save({
                 'model_a_state_dict': model_a.state_dict(),
                 'model_b_state_dict': model_b.state_dict(),
@@ -97,4 +102,11 @@ def main():
             break
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description="Dogs vs Cats Training")
+    parser.add_argument("--data_dir", type=str, default="/content/data/dogs-vs-cats", help="資料集根目錄路徑")
+    parser.add_argument("--epochs", type=int, default=30, help="訓練輪數")
+    parser.add_argument("--batch_size", type=int, default=32, help="batch大小")
+    args = parser.parse_args()
+
+    main(args.data_dir, args.epochs, args.batch_size)
