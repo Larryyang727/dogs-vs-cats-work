@@ -20,14 +20,19 @@ pip install -r requirements.txt
 #若未下載資料集，train.py會自動從Google Drive下載
 
 ```bash
-python train.py
+python train.py --data_dir /content/data/dogs-vs-cats/
 ```
 
 ### 3.評估模型
 ```bash
 python eval.py
 ```
-若訓練時間冗長，可以直接下載已訓練好的模型檔案：[模型](https://drive.google.com/file/d/1_qXVRdHmGWN0WfCcJCcfxRRZAgId5LFY/view?usp=drive_link)
+
+若訓練時間冗長，可以直接下載已訓練好的模型檔案：
+```bash
+pip install gdown
+gdown --id 1_qXVRdHmGWN0WfCcJCcfxRRZAgId5LFY
+```
 
 
 ## Model
@@ -42,6 +47,6 @@ Each model is fine-tuned with:
 
 | Model            | Accuracy | Precision | Recall |
 |------------------|----------|-----------|--------|
-| ResNet18         | 0.995    | 0.997     | 0.999  |
-| EfficientNetB0   | 0.997    | 0.996     | 0.999  |
-| **Ensemble**     | **0.998**| 0.997     | 0.999  |
+| ResNet18         | 0.996    | 0.997     | 0.995  |
+| EfficientNetB0   | 0.998    | 0.996     | 0.999  |
+| **Ensemble**     | **0.999**| 0.998     | 0.999  |
