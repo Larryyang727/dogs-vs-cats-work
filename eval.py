@@ -53,10 +53,10 @@ def plot_roc_curve(y_true, y_probs, save_path='roc_curve.png'):
 if __name__ == "__main__":
     import torch
     from models.load_model import load_models
-    from utils.data_utils import get_val_loader  # 假設你有這個函式幫你載入資料
+    from utils.data_utils import get_dataloaders # 假設你有這個函式幫你載入資料
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_a, model_b = load_models("best_ensemble.pth", device)
-    val_loader = get_val_loader()  # 自訂義你的資料載入函式
+    _, val_loader, _ = get_dataloaders("/content/data/dogs-vs-cats/train", batch_size=32, val_ratio=0.2)
 
     y_true, y_pred, y_probs = evaluate_ensemble(model_a, model_b, val_loader, device)
 
