@@ -1,17 +1,47 @@
-# Dogs vs Cats Classifier
-# 貓狗分類任務
+# Dogs vs Cats貓狗分類任務
 
 專案中使用PyTorch建立模型，來分類圖片中的貓與狗
-資料集使用：https://www.kaggle.com/competitions/dogs-vs-cats/data
-若未下載資料集，train.py會自動從Google Drive下載
 
-# 1.請先將專案clone下來：
+資料集來源：[Dogs vs Cats 資料集 (Kaggle)](https://www.kaggle.com/competitions/dogs-vs-cats/data)
 
+---
+
+### 1.先將專案clone下來：
+
+```bash
 git clone https://github.com/Larryyang727/dogs-vs-cats-work.git
+```
 
-# 2.安裝套件並開始訓練模型
-
+### 2.安裝套件並開始訓練模型
+```bash
 pip install -r requirements.txt
-python train.py
+```
 
-# 3.
+#若未下載資料集，train.py會自動從Google Drive下載
+
+```bash
+python train.py
+```
+
+### 3.評估模型
+```bash
+python eval.py
+```
+若訓練時間冗長，可以直接下載已訓練好的模型檔案：[模型](https://drive.google.com/file/d/1_qXVRdHmGWN0WfCcJCcfxRRZAgId5LFY/view?usp=drive_link)
+
+
+## Model
+
+Each model is fine-tuned with:
+- CrossEntropyLoss
+- Adam optimizer (lr=1e-4)
+- Early stopping with patience=3
+- LR scheduler (ReduceLROnPlateau)
+
+## Model Performance
+
+| Model            | Accuracy | Precision | Recall |
+|------------------|----------|-----------|--------|
+| ResNet18         | 0.995    | 0.997     | 0.999  |
+| EfficientNetB0   | 0.997    | 0.996     | 0.999  |
+| **Ensemble**     | **0.998**| 0.997     | 0.999  |
