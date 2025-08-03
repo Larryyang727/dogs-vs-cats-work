@@ -14,6 +14,7 @@ git clone https://github.com/Larryyang727/dogs-vs-cats-work.git
 
 ### 2.安裝套件並開始訓練模型
 ```bash
+cd dogs-vs-cats-work
 pip install -r requirements.txt
 ```
 
