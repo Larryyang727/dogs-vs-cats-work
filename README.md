@@ -29,7 +29,6 @@ python train.py --data_dir /content/data/dogs-vs-cats/
 ---
 評估前若因訓練時間冗長，可以直接下載並使用已訓練好的模型檔案：
 ```bash
-pip install gdown
 gdown --id 1_qXVRdHmGWN0WfCcJCcfxRRZAgId5LFY
 ```
 
@@ -37,9 +36,6 @@ gdown --id 1_qXVRdHmGWN0WfCcJCcfxRRZAgId5LFY
 ```bash
 python eval.py
 ```
-
-
-
 
 ## Model
 - ResNet18
