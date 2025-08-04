@@ -55,7 +55,7 @@ python eval.py
 | **Ensemble**     | **0.999**| 0.998     | 0.999  |
 
 ## ROC Curve
-<img width="350" height="300" alt="image" src="https://github.com/user-attachments/assets/7c9936a1-9079-4051-bb15-1d14f707092d" />
+<img width="400" height="350" alt="image" src="https://github.com/user-attachments/assets/7c9936a1-9079-4051-bb15-1d14f707092d" />
 
 ## Confusion Matrix
-<img width="350" height="300" alt="image" src="https://github.com/user-attachments/assets/99ea291b-05f1-4358-a2f4-7297f87ed2f2" />
+<img width="400" height="350" alt="image" src="https://github.com/user-attachments/assets/99ea291b-05f1-4358-a2f4-7297f87ed2f2" />
