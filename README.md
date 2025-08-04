@@ -42,7 +42,9 @@ python eval.py
 
 
 ## Model
-
+- ResNet18
+- EfficientNetB0
+- Ensemble
 - CrossEntropyLoss
 - Adam optimizer (lr=1e-4)
 - Early stopping with patience=3
