@@ -10,22 +10,22 @@ def evaluate_model(model, val_loader, device):
     all_labels = []
     all_preds = []
     all_probs = []
-
+#儲存GT標籤、預測與機率
     with torch.no_grad():
         for images, labels in val_loader:
             images = images.to(device)
             labels = labels.to(device)
 
             outputs = model(images)
-            probs = torch.softmax(outputs, dim=1)
-            preds = torch.argmax(probs, dim=1)
+            probs = torch.softmax(outputs, dim=1) #預測機率
+            preds = torch.argmax(probs, dim=1) #類別預測
 
             all_labels.extend(labels.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
-            all_probs.extend(probs[:, 1].cpu().numpy())  # 取 class 1 的機率
+            all_probs.extend(probs[:, 1].cpu().numpy())  #是狗的機率 ROC
 
     return np.array(all_labels), np.array(all_preds), np.array(all_probs)
-
+#兩個模型做平均
 def evaluate_ensemble(model_a, model_b, val_loader, device):
     model_a.eval()
     model_b.eval()
@@ -57,7 +57,7 @@ def print_metrics(name, y_true, y_pred):
     print("Precision:", precision_score(y_true, y_pred))
     print("Recall:", recall_score(y_true, y_pred))
 
-def plot_confusion_matrix(y_true, y_pred, classes=['Cat', 'Dog'], title='Confusion Matrix', save_path=None):
+def plot_confusion_matrix(y_true, y_pred, classes=['Cat','Dog'], title='Confusion Matrix', save_path=None):
     cm = confusion_matrix(y_true, y_pred)
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classes, yticklabels=classes)
     plt.title(title)
@@ -90,27 +90,28 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_a, model_b = load_models(
-      "best_ensemble.pth", device)  # ResNet18 and EfficientNetB0
+      "best_ensemble.pth", device)  #ResNet18、EfficientNetB0
 
     train_dir = args.data_dir
     train_path = train_dir
 
     _, val_loader, _ = get_dataloaders(train_path,batch_size=32,val_ratio=0.2)
 
-    # ResNet18
+    #ResNet18
     y_true_a, y_pred_a, y_probs_a = evaluate_model(model_a, val_loader, device)
     print_metrics("ResNet18", y_true_a, y_pred_a)
     plot_confusion_matrix(y_true_a, y_pred_a, title='ResNet18 Confusion Matrix')
     plot_roc_curve(y_true_a, y_probs_a, label='ResNet18')
 
-    # EfficientNetB0
+    #EfficientNetB0
     y_true_b, y_pred_b, y_probs_b = evaluate_model(model_b, val_loader, device)
     print_metrics("EfficientNetB0", y_true_b, y_pred_b)
     plot_confusion_matrix(y_true_b, y_pred_b, title='EfficientNetB0 Confusion Matrix')
     plot_roc_curve(y_true_b, y_probs_b, label='EfficientNetB0')
 
-    # Ensemble
+    #Ensemble
     y_true_ens, y_pred_ens, y_probs_ens = evaluate_ensemble(model_a, model_b, val_loader, device)
     print_metrics("Ensemble", y_true_ens, y_pred_ens)
     plot_confusion_matrix(y_true_ens, y_pred_ens, title='Ensemble Confusion Matrix')
     plot_roc_curve(y_true_ens, y_probs_ens, label='Ensemble')
+
