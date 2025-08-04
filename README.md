@@ -43,7 +43,6 @@ python eval.py
 
 ## Model
 
-Each model is fine-tuned with:
 - CrossEntropyLoss
 - Adam optimizer (lr=1e-4)
 - Early stopping with patience=3
