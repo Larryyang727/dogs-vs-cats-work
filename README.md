@@ -48,7 +48,7 @@ python eval.py
 - CrossEntropyLoss
 - Adam optimizer (lr=1e-4)
 - Early stopping with patience=3
-- LR scheduler (ReduceLROnPlateau)
+- LR scheduler
 
 ## Model Performance
 
