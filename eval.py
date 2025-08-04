@@ -22,10 +22,16 @@ def evaluate_model(model, val_loader, device):
 
             all_labels.extend(labels.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
-            all_probs.extend(probs[:, 1].cpu().numpy())  #是狗的機率 ROC
+            all_probs.extend(probs[:, 1].cpu().numpy())  #是狗的機率
 
     return np.array(all_labels), np.array(all_preds), np.array(all_probs)
 #兩個模型做平均
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, roc_curve, auc
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import torch
+
 def evaluate_ensemble(model_a, model_b, val_loader, device):
     model_a.eval()
     model_b.eval()
@@ -39,14 +45,24 @@ def evaluate_ensemble(model_a, model_b, val_loader, device):
             images = images.to(device)
             labels = labels.to(device)
 
-            out1 = model_a(images)
-            out2 = model_b(images)
-            avg_out = (out1 + out2) / 2
-            probs = torch.softmax(avg_out, dim=1)
+            #取得模型輸出
+            outputs_a = model_a(images)
+            outputs_b = model_b(images)
+
+            #Softmax機率
+            probs_a = torch.softmax(outputs_a, dim=1)
+            probs_b = torch.softmax(outputs_b, dim=1)
+
+            #取平均ENSEMBLE結果
+            probs = (probs_a + probs_b) / 2
+
+            #預測類別
             preds = torch.argmax(probs, dim=1)
 
             all_labels.extend(labels.cpu().numpy())
             all_preds.extend(preds.cpu().numpy())
+
+            #取狗的機率
             all_probs.extend(probs[:, 1].cpu().numpy())
 
     return np.array(all_labels), np.array(all_preds), np.array(all_probs)
@@ -114,4 +130,5 @@ if __name__ == "__main__":
     print_metrics("Ensemble", y_true_ens, y_pred_ens)
     plot_confusion_matrix(y_true_ens, y_pred_ens, title='Ensemble Confusion Matrix')
     plot_roc_curve(y_true_ens, y_probs_ens, label='Ensemble')
+
 
