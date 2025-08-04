@@ -74,6 +74,7 @@ def print_metrics(name, y_true, y_pred):
     print("Recall:", recall_score(y_true, y_pred))
 
 def plot_confusion_matrix(y_true, y_pred, classes=['Cat','Dog'], title='Confusion Matrix', save_path=None):
+    plt.figure(figsize=(6, 5))  #設定大小
     cm = confusion_matrix(y_true, y_pred)
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classes, yticklabels=classes)
     plt.title(title)
@@ -82,11 +83,12 @@ def plot_confusion_matrix(y_true, y_pred, classes=['Cat','Dog'], title='Confusio
     if save_path:
         plt.savefig(save_path)
     plt.show()
-
-def plot_roc_curve(y_true, y_probs, label='ROC', save_path=None):
+    plt.close()  #關閉圖形
+def plot_roc_curve(y_true, y_probs, label='ROC curve',save_path='roc_curve.png'):
+    plt.figure(figsize=(6, 5))  #設定大小
     fpr, tpr, _ = roc_curve(y_true, y_probs)
     roc_auc = auc(fpr, tpr)
-    plt.plot(fpr, tpr, label=f'{label} (AUC = {roc_auc:.2f})')
+    plt.plot(fpr, tpr, label=f'{label} (AUC = {roc_auc:.2f})', color='blue')
     plt.plot([0, 1], [0, 1], 'k--')
     plt.title('ROC Curve')
     plt.xlabel('False Positive Rate')
@@ -95,6 +97,7 @@ def plot_roc_curve(y_true, y_probs, label='ROC', save_path=None):
     if save_path:
         plt.savefig(save_path)
     plt.show()
+    plt.close()  #關閉圖形
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -130,5 +133,6 @@ if __name__ == "__main__":
     print_metrics("Ensemble", y_true_ens, y_pred_ens)
     plot_confusion_matrix(y_true_ens, y_pred_ens, title='Ensemble Confusion Matrix')
     plot_roc_curve(y_true_ens, y_probs_ens, label='Ensemble')
+
 
 
