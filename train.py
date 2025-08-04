@@ -34,19 +34,19 @@ def main(data_dir, epochs=30, batch_size=32):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     train_path = os.path.join(data_dir, "train")
     train_loader, val_loader, class_to_idx = get_dataloaders(train_path, batch_size)
-    print("類別對應：", class_to_idx)
+    print("類別對應：", class_to_idx) #顯示資料夾名稱對應的類別編號
 
     model_a = get_resnet18().to(device)
     model_b = get_efficientnet_b0().to(device)
 
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer_a = optim.Adam(model_a.parameters(), lr=1e-4)
+    criterion = torch.nn.CrossEntropyLoss() #用CrossEntropyLoss當損失函數
+    optimizer_a = optim.Adam(model_a.parameters(), lr=1e-4)#ADAM優化器
     optimizer_b = optim.Adam(model_b.parameters(), lr=1e-4)
 
-    scheduler_a = optim.lr_scheduler.ReduceLROnPlateau(optimizer_a, mode='min', patience=2, factor=0.5, verbose=True)
+    scheduler_a = optim.lr_scheduler.ReduceLROnPlateau(optimizer_a, mode='min', patience=2, factor=0.5, verbose=True)#觀察LOSS自動調整LR，2次沒進步就調整
     scheduler_b = optim.lr_scheduler.ReduceLROnPlateau(optimizer_b, mode='min', patience=2, factor=0.5, verbose=True)
 
-    early_stopping_patience = 3
+    early_stopping_patience = 3 #3次EPOCH沒進步或降低停止訓練
     best_val_loss_a = float('inf')
     best_val_loss_b = float('inf')
     patience_counter_a = 0
@@ -73,7 +73,7 @@ def main(data_dir, epochs=30, batch_size=32):
         print(f"\n  ResNet     - Train Loss: {train_loss_a:.4f}, Val Loss: {val_loss_a:.4f}, Val Acc: {val_acc_a:.4f}")
         print(f"  Efficient  - Train Loss: {train_loss_b:.4f}, Val Loss: {val_loss_b:.4f}, Val Acc: {val_acc_b:.4f}")
         print(f"  Ensemble   - Val Acc:    {ensemble_acc:.4f}")
-
+#新的ensemble表現更好就儲存新的
         if ensemble_acc > best_ensemble_acc:
             best_ensemble_acc = ensemble_acc
             print(f"New best ensemble acc: {best_ensemble_acc:.4f} — model saved.")
@@ -84,7 +84,7 @@ def main(data_dir, epochs=30, batch_size=32):
 
         scheduler_a.step(val_loss_a)
         scheduler_b.step(val_loss_b)
-
+#改善就把patience歸0，沒改善+1
         if val_loss_a < best_val_loss_a:
             best_val_loss_a = val_loss_a
             patience_counter_a = 0
@@ -108,5 +108,6 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=30, help="訓練輪數")
     parser.add_argument("--batch_size", type=int, default=32, help="batch大小")
     args = parser.parse_args()
+
 
     main(args.data_dir, args.epochs, args.batch_size)
