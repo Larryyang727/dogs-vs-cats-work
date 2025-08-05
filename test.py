@@ -5,7 +5,7 @@ import os
 import pandas as pd
 
 #模型
-from models.load_model import load_models  # 假設你有這個function
+from models.load_model import load_models  
 
 def predict_ensemble_test(model_a, model_b, test_dir, device, output_file='submission.csv'):
     model_a.eval()
